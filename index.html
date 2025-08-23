@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kancil Petualangan - Level 3</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f1f8e9;
+      text-align: center;
+      padding: 40px;
+    }
+    #game-box {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .option-btn {
+      background-color: #43a047;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .option-btn:hover {
+      background-color: #2e7d32;
+    }
+    #nyawa {
+      font-weight: bold;
+      color: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-box">
+    <h2>Petualangan Si Kancil</h2>
+    <p id="story">Kancil berada di hutan rahasia. Ada tiga jalan: kiri, kanan, atau lurus.</p>
+    <p>Nyawa: <span id="nyawa">3</span></p>
+    <div id="options">
+      <button class="option-btn" onclick="choose('kiri')">Jalan Kiri</button>
+      <button class="option-btn" onclick="choose('kanan')">Jalan Kanan</button>
+      <button class="option-btn" onclick="choose('lurus')">Jalan Lurus</button>
+    </div>
+  </div>
+
+  <audio id="click-sound" src="click.mp3"></audio>
+  <audio id="win-sound" src="win.mp3"></audio>
+  <audio id="lose-sound" src="lose.mp3"></audio>
+
+  <script>
+    let nyawa = 3;
+
+    function playSound(id) {
+      const sound = document.getElementById(id);
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play();
+      }
+    }
+
+    function updateNyawa() {
+      document.getElementById("nyawa").textContent = nyawa;
+      if (nyawa <= 0) {
+        document.getElementById("story").textContent = "Kancil kehabisan nyawa. Game Over!";
+        document.getElementById("options").innerHTML = `<button class="option-btn" onclick="restart()">Main Lagi</button>`;
+        playSound('lose-sound');
+      }
+    }
+
+    function salah() {
+      const story = document.getElementById("story");
+      story.textContent = "Jawaban salah! Nyawa berkurang.";
+      nyawa--; 
+      updateNyawa();
+    }
+
+    function menang(pesan) {
+      const story = document.getElementById("story");
+      const options = document.getElementById("options");
+
+      story.textContent = pesan + " (Mengalihkan...)";
+      options.innerHTML = ``; // hapus tombol
+      playSound('win-sound');
+
+      setTimeout(() => {
+        window.location.href = "https://ichibanbergen.no/";
+      }, 3000); // otomatis pindah setelah 3 detik
+    }
+
+    function choose(pilihan) {
+      playSound('click-sound');
+      const story = document.getElementById("story");
+      const options = document.getElementById("options");
+
+      // Pilihan awal
+      if (pilihan === 'kiri') {
+        story.textContent = "Kancil bertemu sungai deras. Lanjutkan?";
+        options.innerHTML = `
+          <button class="option-btn" onclick="choose('jembatan')">Lewat jembatan kayu</button>
+          <button class="option-btn" onclick="choose('berenang')">Coba berenang</button>
+        `;
+      } else if (pilihan === 'kanan') {
+        story.textContent = "Ada harimau! Cepat putuskan!";
+        options.innerHTML = `
+          <button class="option-btn" onclick="choose('sembunyi')">Sembunyi</button>
+          <button class="option-btn" onclick="choose('lari')">Lari</button>
+        `;
+      } else if (pilihan === 'lurus') {
+        story.textContent = "Kancil menemukan jalan rahasia penuh teka-teki. Pilih salah satu pertanyaan:";
+        options.innerHTML = `
+          <button class="option-btn" onclick="choose('teka1')">Aku punya 5 jari tapi bukan tangan. Siapakah aku?</button>
+          <button class="option-btn" onclick="choose('teka2')">Apa yang selalu naik tapi tidak pernah turun?</button>
+          <button class="option-btn" onclick="choose('teka3')">Aku bisa pecah tapi tidak bisa jatuh. Apakah aku?</button>
+          <button class="option-btn" onclick="choose('teka4')">Aku punya mata tiga, tetapi buta. Aku bisa menyuruh orang berhenti dan jalan. Apakah aku?</button>
+          <button class="option-btn" onclick="choose('teka5')">Aku selalu ada di depanmu, tapi kau tak bisa melihatku. Apakah aku?</button>
+        `;
+      }
+
+      // Jalan Kiri
+      else if (pilihan === 'jembatan') {
+        menang("Kancil berhasil menyeberang dan selamat! Kamu menang!");
+      } else if (pilihan === 'berenang') {
+        story.textContent = "Arus kuat! Nyawa berkurang.";
+        nyawa--;
+        updateNyawa();
+      }
+
+      // Jalan Kanan
+      else if (pilihan === 'sembunyi') {
+        menang("Harimau lewat. Kancil selamat dan menang!");
+      } else if (pilihan === 'lari') {
+        story.textContent = "Harimau mengejar! Nyawa berkurang.";
+        nyawa--;
+        updateNyawa();
+      }
+
+      // Jalan Lurus (Teka-teki)
+      else if (pilihan === 'teka1') {
+        let jawab = prompt("Jawab pertanyaan: Aku punya 5 jari tapi bukan tangan. Siapakah aku?");
+        if (jawab && jawab.toLowerCase().includes("sarung tangan")) menang("Benar! Itu sarung tangan!");
+        else salah();
+      }
+      else if (pilihan === 'teka2') {
+        let jawab = prompt("Jawab pertanyaan: Apa yang selalu naik tapi tidak pernah turun?");
+        if (jawab && jawab.toLowerCase().includes("umur")) menang("Benar! Jawabannya umur!");
+        else salah();
+      }
+      else if (pilihan === 'teka3') {
+        let jawab = prompt("Jawab pertanyaan: Aku bisa pecah tapi tidak bisa jatuh. Apakah aku?");
+        if (jawab && jawab.toLowerCase().includes("hati")) menang("Tepat sekali! Itu hati!");
+        else salah();
+      }
+      else if (pilihan === 'teka4') {
+        let jawab = prompt("Jawab pertanyaan: Aku punya mata tiga, tetapi buta. Aku bisa menyuruh orang berhenti dan jalan. Apakah aku?");
+        if (jawab && jawab.toLowerCase().includes("lampu merah")) menang("Hebat! Jawabannya lampu merah!");
+        else salah();
+      }
+      else if (pilihan === 'teka5') {
+        let jawab = prompt("Jawab pertanyaan: Aku selalu ada di depanmu, tapi kau tak bisa melihatku. Apakah aku?");
+        if (jawab && jawab.toLowerCase().includes("masa depan")) menang("Benar! Jawabannya masa depan!");
+        else salah();
+      }
+    }
+
+    function restart() {
+      nyawa = 3;
+      document.getElementById("story").textContent = "Kancil berada di hutan rahasia. Ada tiga jalan: kiri, kanan, atau lurus.";
+      document.getElementById("nyawa").textContent = nyawa;
+      document.getElementById("options").innerHTML = `
+        <button class="option-btn" onclick="choose('kiri')">Jalan Kiri</button>
+        <button class="option-btn" onclick="choose('kanan')">Jalan Kanan</button>
+        <button class="option-btn" onclick="choose('lurus')">Jalan Lurus</button>
+      `;
+    }
+  </script>
+</body>
+</html>
